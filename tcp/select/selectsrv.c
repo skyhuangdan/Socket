@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
                     close(sd);
                     client_sockets[i] = 0;
                     printf("close socket\n");
-                } else {
+                } else if(buf[0] != '\0'){
                     printf("receive client data : %s\n", buf);
                     strcpy(buf, "Hello Client\0");
                     res = write(sd, buf, strlen(buf));
