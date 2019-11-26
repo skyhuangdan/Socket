@@ -23,30 +23,30 @@ int main(int argc, char *argv[])
     fd_set readfds;
 
     memset(&hint, 0, sizeof(hint));
-    hint.ai_family   = AF_INET;
-    hint.ai_socktype = SOCK_STREAM;
+    hint.ai_family   = AF_INET;//IPv4 当为IPv6时为:AF_INET6
+    hint.ai_socktype = SOCK_STREAM;//流模式
     hint.ai_protocol = 0;
-    hint.ai_flags    = AI_PASSIVE;
-
+    hint.ai_flags    = AI_PASSIVE;//被动的，用于bind，用于server socket
+    //处理名字到地址以及服务到端口这两种转换
     res = getaddrinfo(NULL, "8088", &hint, &result);
     if (res != 0) {
         perror("error : cannot get socket address!\n");
         exit(1);
     }
-
+    //获得句柄
     master_socket = socket(result->ai_family, result->ai_socktype,
                            result->ai_protocol);
     if (master_socket == -1) {
         perror("error : cannot get socket file descriptor!\n");
         exit(1);
     }
-    
+    //绑定到端口
     res = bind(master_socket, result->ai_addr, result->ai_addrlen);
     if (res == -1) {
         perror("error : cannot bind the socket with the given address!\n");
         exit(1);
     }
-
+    //开始监听
     res = listen(master_socket, SOMAXCONN);
     if (res == -1) {
         perror("error : cannot listen at the given socket!\n");
