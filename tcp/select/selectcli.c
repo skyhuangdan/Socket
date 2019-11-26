@@ -34,8 +34,20 @@ int main(int argc, char *argv[])
         exit(1);
     }
     printf(" connected !!\n");
+    while (1)
+    {
+        printf("pls input:\n");    
+        char desc[1024] = {0};      
+        scanf("%s", &desc);
+        printf(" inputed: %s\n", desc);  
+        write(sfd, desc, sizeof(desc));
+
+        //等待服务器返回数据
+        read(sfd, buf, sizeof(buf));
+        printf("read < %s > from server\n", buf);
+    }
     
-    
+/*
     strcpy(buf, "Hello Server!");
     //给服务器发送数据
     write(sfd, buf, sizeof(buf));
@@ -43,7 +55,7 @@ int main(int argc, char *argv[])
     //等待服务器返回数据
     read(sfd, buf, sizeof(buf));
     printf("read < %s > from server\n", buf);
-
-    sleep(20);
+*/
+    printf("client closed\n");
     return 0;
 }

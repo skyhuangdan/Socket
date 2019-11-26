@@ -57,7 +57,10 @@ int main(int argc, char *argv[])
 
     addrlen = sizeof(struct sockaddr);
     while (1) {
+        //将指定的文件描述符集清空，在对文件描述符集合进行设置前，必须对其进行初始化，
+        //如果不清空，由于在系统分配内存空间后，通常并不作清空处理，所以结果是不可知的。
         FD_ZERO(&readfds);
+        //用于在文件描述符集合中增加一个新的文件描述符。
         FD_SET(master_socket, &readfds);
         max_sd = master_socket;
         
@@ -73,20 +76,22 @@ int main(int argc, char *argv[])
                 max_sd = sd;
             }
         }
-        
+        //select函数用于在非阻塞中，当一个套接字或一组套接字有信号时通知你，系统提供select函数来实现多路复用输入/输出模型
         res = select(max_sd + 1, &readfds, NULL, NULL, NULL);
         if ( res < 0) {
-            perror("error : func select error");
+            perror("error :select func select error");
             exit(1);
         }
-
+        //用于测试指定的文件描述符是否在该集合中。
         if (FD_ISSET(master_socket, &readfds)) {
-            
+            //接受来自客户端连接的申请
             sd = accept(master_socket, &remote, &addrlen);
             if (sd < 0) {
                 perror("error : cannot accept client socket\n");
                 exit(1);
             }
+            printf("accept new client! sd: %d\n", sd);
+
             
             //strcpy(buf, "Welcome Client");
             //write(sd, buf, strlen(buf));
@@ -101,7 +106,9 @@ int main(int argc, char *argv[])
         
         for (i = 0; i < MAX_CLIENTS; i++) {
             sd = client_sockets[i];
+
             if (FD_ISSET(sd, &readfds)) {
+                //读取客户端数据
                 res = read(sd, buf, sizeof(buf));
                 
                 if (res == 0) {
